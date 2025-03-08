@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep Dork</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --neon-color: #871DC9;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #000000;
+      color: var(--neon-color);
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Color Picker */
+    .color-picker {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      border: 1px solid var(--neon-color);
+      border-radius: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .color-picker label {
+      color: var(--neon-color);
+    }
+
+    .color-picker input[type="color"] {
+      background: none;
+      border: none;
+      width: 50px;
+      height: 30px;
+      cursor: pointer;
+    }
+
+    /* Matrix Rain Effect */
+    .matrix-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background-color: rgba(0, 0, 0, 0.9);
+      overflow: hidden;
+    }
+
+    .matrix-character {
+      position: absolute;
+      font-size: 14px;
+      line-height: 14px;
+      white-space: nowrap;
+      opacity: 0;
+      animation: matrix-rain linear infinite;
+      color: var(--neon-color);
+    }
+
+    @keyframes matrix-rain {
+      0% {
+        opacity: 1;
+        transform: translateY(-100%);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(100vh);
+      }
+    }
+
+    /* Header Styles */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    /* Title Animation */
+    .logo {
+      font-size: 3.5rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+      position: relative;
+      display: inline-block;
+      color: var(--neon-color);
+      text-shadow: 0 0 10px var(--neon-color), 0 0 20px var(--neon-color);
+      animation: neon-pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes neon-pulse {
+      0%, 100% {
+        text-shadow: 0 0 10px var(--neon-color),
+                     0 0 20px var(--neon-color),
+                     0 0 30px var(--neon-color);
+      }
+      50% {
+        text-shadow: 0 0 15px var(--neon-color),
+                     0 0 25px var(--neon-color),
+                     0 0 35px var(--neon-color),
+                     0 0 45px var(--neon-color);
+      }
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: var(--neon-color);
+      opacity: 0.7;
+      margin-top: 10px;
+    }
+
+    /* Search Container Styles */
+    .search-container {
+      background: rgba(49, 0, 79, 0.1);
+      border: 1px solid var(--neon-color);
+      border-radius: 8px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 20px rgba(49, 0, 79, 0.2);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(5px);
+    }
+
+    .search-container::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(49, 0, 79, 0.1),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: searchLight 3s infinite;
+    }
+
+    .search-bar,
+    .filter-select {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      background-color: rgba(0, 0, 0, 0.8);
+      border: 1px solid var(--neon-color);
+      color: var(--neon-color);
+      font-family: 'Share Tech Mono', monospace;
+      border-radius: 4px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .search-bar:focus,
+    .filter-select:focus {
+      box-shadow: 0 0 15px var(--neon-color);
+    }
+
+    /* Results Container Styles */
+    .dork-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      list-style: none;
+    }
+
+    .dork-item {
+      background: rgba(49, 0, 79, 0.1);
+      border: 1px solid var(--neon-color);
+      border-radius: 8px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dork-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px var(--neon-color);
+    }
+
+    .dork-item::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(49, 0, 79, 0.2),
+        transparent
+      );
+      transition: 0.5s;
+    }
+
+    .dork-item:hover::before {
+      left: 100%;
+    }
+
+    /* Scanline Effect */
+    .scanline {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        to bottom,
+        transparent 50%,
+        rgba(49, 0, 79, 0.02) 50%
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .screen-flicker {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(49, 0, 79, 0.02);
+      pointer-events: none;
+      z-index: 9;
+      animation: flicker 0.15s infinite;
+    }
+
+    /* Animations */
+    @keyframes searchLight {
+      0% {
+        transform: rotate(45deg) translateX(-100%);
+      }
+      100% {
+        transform: rotate(45deg) translateX(100%);
+      }
+    }
+
+    @keyframes flicker {
+      0% { opacity: 0.7; }
+      5% { opacity: 0.8; }
+      10% { opacity: 0.7; }
+      15% { opacity: 0.8; }
+      20% { opacity: 0.7; }
+      25% { opacity: 0.9; }
+      30% { opacity: 0.7; }
+      35% { opacity: 0.8; }
+      40% { opacity: 0.7; }
+      45% { opacity: 1; }
+      50% { opacity: 0.7; }
+      55% { opacity: 0.8; }
+      60% { opacity: 0.7; }
+      65% { opacity: 1; }
+      70% { opacity: 0.7; }
+      75% { opacity: 0.9; }
+      80% { opacity: 0.7; }
+      85% { opacity: 0.8; }
+      90% { opacity: 0.7; }
+      95% { opacity: 0.9; }
+      100% { opacity: 0.7; }
+    }
+  </style>
+</head>
+<body>
+  <div class="matrix-bg" id="matrixBg"></div>
+  <div class="scanline"></div>
+  <div class="screen-flicker"></div>
+
+  <div class="color-picker">
+    <label for="themeColor">Theme:</label>
+    <input type="color" id="themeColor" value="#871DC9">
+  </div>
+
+  <div class="container">
+    <header>
+      <h1 class="logo">DEEP DORK</h1>
+      <p class="subtitle">Advanced Google Dorking Tool</p>
+      <p class="subtitle">Developed by: Diogo Lages</p>
+    </header>
+
+    <div class="search-container">
+      <input type="text" id="searchInput" class="search-bar" placeholder="Enter search term...">
+      <select id="categoryFilter" class="filter-select">
+        <option value="all">All categories</option>
+      </select>
+    </div>
+
+    <div class="results-container" id="resultsContainer" style="display: none;">
+      <div id="dorkList" class="dork-list"></div>
+    </div>
+  </div>
+
+  <script>
+    // Global dorks variable to store the loaded data
+    let dorks = [];
+
+    // Color theme handling
+    const root = document.documentElement;
+    const colorPicker = document.getElementById('themeColor');
+
+    // Load saved color or use default
+    const savedColor = localStorage.getItem('themeColor') || '#871DC9';
+    root.style.setProperty('--neon-color', savedColor);
+    colorPicker.value = savedColor;
+
+    colorPicker.addEventListener('input', (e) => {
+      const color = e.target.value;
+      root.style.setProperty('--neon-color', color);
+      localStorage.setItem('themeColor', color);
+    });
+
+    // Matrix rain effect
+    function createMatrixRain() {
+      const characters = '¦|/\\[]{}()!@#$%^&*+-=~';
+      const bg = document.getElementById('matrixBg');
+      const width = window.innerWidth;
+      const columns = Math.floor(width / 20);
+
+      for (let i = 0; i < columns; i++) {
+        const stream = document.createElement('div');
+        stream.className = 'matrix-character';
+        stream.style.left = (i * 20) + 'px';
+        stream.style.animationDuration = Math.random() * 2 + 1 + 's';
+        stream.style.animationDelay = Math.random() * 2 + 's';
+        stream.textContent = characters[Math.floor(Math.random() * characters.length)];
+        bg.appendChild(stream);
+
+        setInterval(() => {
+          stream.textContent = characters[Math.floor(Math.random() * characters.length)];
+        }, 50);
+      }
+    }
+
+    // Load and process dorks
+    async function loadDorks() {
+      try {
+        const response = await fetch('dorks.json');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.json();
+      } catch (error) {
+        console.error('Error loading dorks:', error);
+        return [];
+      }
+    }
+
+    function filterDorks() {
+      const searchInput = document.getElementById('searchInput');
+      const categoryFilter = document.getElementById('categoryFilter');
+      const resultsContainer = document.getElementById('resultsContainer');
+      const dorkList = document.getElementById('dorkList');
+
+      const searchTerm = searchInput.value.trim();
+      const selectedCategory = categoryFilter.value;
+
+      const filtered = dorks.filter(dork => {
+        return selectedCategory === 'all' || dork.category === selectedCategory;
+      });
+
+      dorkList.innerHTML = '';
+
+      if (filtered.length > 0) {
+        filtered.forEach(dork => {
+          const query = dork.query.replace(/\{nome\}/g, searchTerm || 'example.com');
+          const description = dork.description.replace(/\{nome\}/g, searchTerm || 'example.com');
+
+          const div = document.createElement('div');
+          div.className = 'dork-item';
+          div.innerHTML = `
+            <h3>${query}</h3>
+            <p><strong>Category:</strong> ${dork.category}</p>
+            <p>${description}</p>
+          `;
+
+          div.addEventListener('click', () => {
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+          });
+
+          dorkList.appendChild(div);
+        });
+        resultsContainer.style.display = 'block';
+      } else {
+        resultsContainer.style.display = 'none';
+      }
+    }
+
+    // Initialize application
+    async function init() {
+      createMatrixRain();
+
+      try {
+        // Load dorks first
+        dorks = await loadDorks();
+        console.log('Loaded dorks:', dorks); // Debug log
+
+        if (!dorks || dorks.length === 0) {
+          console.error('No dorks loaded');
+          return;
+        }
+
+        const categories = new Set(dorks.map(d => d.category));
+        const categoryFilter = document.getElementById('categoryFilter');
+
+        // Clear existing options
+        categoryFilter.innerHTML = '<option value="all">All categories</option>';
+
+        // Add categories
+        categories.forEach(category => {
+          const option = document.createElement('option');
+          option.value = category;
+          option.textContent = category;
+          categoryFilter.appendChild(option);
+        });
+
+        // Add event listeners
+        document.getElementById('searchInput').addEventListener('input', filterDorks);
+        categoryFilter.addEventListener('change', filterDorks);
+
+        // Initial filter to show all dorks
+        filterDorks();
+      } catch (error) {
+        console.error('Error initializing application:', error);
+      }
+    }
+
+    // Start the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
