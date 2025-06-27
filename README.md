@@ -88,7 +88,7 @@ To add new dorks to the tool:
 ---
 
 ## Hosting Options
-The tool is already hosted on GitHub Pages for public access. You can use it directly at [https://diogo-lages.github.io/Deep-Dork-Web/](https://Gh0sT2xx2.github.io/Deep-Dork-Web/).
+The tool is already hosted on GitHub Pages for public access. You can use it directly at [https://Gh0sT2xx2.github.io/Deep-Dork-Web/](https://Gh0sT2xx2.github.io/Deep-Dork-Web/).
 
 If you'd like to host your own version:
 1. Fork the repository from [GitHub](https://github.com/Gh0sT2xx2/Deep-Dork-Web).
